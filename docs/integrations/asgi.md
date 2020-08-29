@@ -10,7 +10,7 @@ can use to serve your GraphQL schema:
 ```python
 from strawberry.asgi import GraphQL
 
-from api.schema import Schema
+from api.schema import schema
 
 app = GraphQL(schema)
 ```
