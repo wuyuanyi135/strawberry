@@ -6,7 +6,7 @@ from typing_extensions import Annotated, get_args, get_origin
 
 from .exceptions import MultipleStrawberryArgumentsError, UnsupportedTypeError
 from .scalars import is_scalar
-from .types.type_resolver import resolve_type
+# from .types.type_resolver import resolve_type
 from .types.types import ArgumentDefinition, undefined
 from .utils.str_converters import to_camel_case
 
@@ -23,6 +23,8 @@ def get_arguments_from_annotations(
 ) -> List[ArgumentDefinition]:
     arguments = []
 
+    from strawberry.types.types_new.type import StrawberryType
+
     for name, annotation in annotations.items():
         default_value = parameters[name].default
         default_value = (
@@ -35,14 +37,15 @@ def get_arguments_from_annotations(
             origin_name=name,
             name=to_camel_case(name),
             origin=origin,
-            default_value=default_value,
         )
 
+        # TODO: StrawberryType should handle Annotated types
         if get_origin(annotation) is Annotated:
             annotated_args = get_args(annotation)
 
             # The first argument to Annotated is always the underlying type
-            argument_definition.type = annotated_args[0]
+            argument_definition.type = StrawberryType(annotated_args[0],
+                                                      default=default_value)
 
             argument_metadata = None
             # Find any instances of StrawberryArgument in the other Annotated args,
@@ -58,11 +61,12 @@ def get_arguments_from_annotations(
             if argument_metadata is not None:
                 argument_definition.description = argument_metadata.description
         else:
-            argument_definition.type = annotation
+            argument_definition.type = StrawberryType(annotation, default=default_value)
 
         arguments.append(argument_definition)
 
-        resolve_type(argument_definition)
+        # _Should_ no longer be necessary
+        # resolve_type(argument_definition)
 
     return arguments
 

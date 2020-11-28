@@ -47,20 +47,20 @@ def get_graphql_type(
     wrap: Optional[Callable] = GraphQLNonNull
 
     type: GraphQLType
-    field_type = cast(Type, field.type)
 
-    if field.is_optional:
+    if field.type.is_optional:
         wrap = None
 
-    if field.is_list:
+    if field.type.is_list:
         child = cast(FieldDefinition, field.child)
         type = GraphQLList(get_graphql_type(child, type_map))
 
-    elif field.is_union:
-        union_definition = cast(StrawberryUnion, field_type)
+    elif field.type.is_union:
+        union_definition = cast(StrawberryUnion, field.type)
         type = get_union_type(union_definition, type_map)
     else:
-        type = get_type_for_annotation(field_type, type_map)
+        # TODO: Move to StrawberryType
+        type = get_type_for_annotation(field.type.wrapped_type, type_map)
 
     if wrap:
         return wrap(type)

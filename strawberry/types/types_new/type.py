@@ -54,11 +54,13 @@ class StrawberryType(ABC, Generic[T]):
         """
 
         if self.is_list:
-            return strawberry.utils.typing.get_list_annotation(self.wrapped_type)
-        if self.is_union:
-            return self.wrapped_type.children  # TODO
+            types = strawberry.utils.typing.get_list_annotation(self.wrapped_type)
+        elif self.is_union:
+            types = self.wrapped_type.children  # TODO
+        else:
+            return None
 
-        return None
+        return tuple(map(StrawberryType, types))
 
     @cached_property
     def wrapped_type(self) -> T:
@@ -108,6 +110,7 @@ class StrawberryType(ABC, Generic[T]):
         self._is_optional = optional
         self._is_forward_ref = forward_ref
 
+        # TODO: Maybe it would be best to use some sort of loop here?
         # Do it again. This ensures that both "Optional[SomeClass]" and
         # Optional["SomeClass"] are handled
         type_, forward_ref = self._resolve_forward_ref(type_, self._namespace)

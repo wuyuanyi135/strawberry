@@ -12,9 +12,14 @@ from .types import TypeMap
 def convert_argument(
     argument: ArgumentDefinition, type_map: TypeMap
 ) -> GraphQLArgument:
+
+    from strawberry.types.types_new.type import StrawberryType
+
     # TODO: test and support generic arguments?
     default_value = (
-        Undefined if argument.default_value is undefined else argument.default_value
+        Undefined if argument.type.default
+        is StrawberryType.UNSET
+        else argument.type.default
     )
 
     # TODO: we could overload the function to tell mypy that it returns input types too

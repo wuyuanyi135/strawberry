@@ -2,11 +2,10 @@ import dataclasses
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 from strawberry.permission import BasePermission
-from strawberry.union import StrawberryUnion
-
 
 if TYPE_CHECKING:
     from strawberry.types.fields.resolver import StrawberryResolver
+    from strawberry.types.types_new.type import StrawberryType
 
 undefined = object()
 
@@ -36,9 +35,11 @@ class TypeDefinition:
 
     @property
     def fields(self) -> List["FieldDefinition"]:
-        from .type_resolver import _resolve_types
+        # from .type_resolver import _resolve_types
 
-        return _resolve_types(self._fields)
+        return self._fields
+
+        # return _resolve_types(self._fields)
 
     @property
     def type_params(self) -> Dict[str, Type]:
@@ -54,16 +55,12 @@ class TypeDefinition:
 class ArgumentDefinition:
     name: Optional[str] = None
     origin_name: Optional[str] = None
-    type: Optional[Type] = None
+    type: Optional["StrawberryType"] = None
     origin: Optional[Type] = None
     child: Optional["ArgumentDefinition"] = None
     is_subscription: bool = False
-    is_optional: bool = False
     is_child_optional: bool = False
-    is_list: bool = False
-    is_union: bool = False
     description: Optional[str] = None
-    default_value: Any = undefined
 
 
 @dataclasses.dataclass
@@ -77,14 +74,11 @@ class FederationFieldParams:
 class FieldDefinition:
     name: Optional[str]
     origin_name: Optional[str]
-    type: Optional[Union[Type, StrawberryUnion]]
+    type: Optional["StrawberryType"]
     origin: Optional[Union[Type, Callable]] = None
     child: Optional["FieldDefinition"] = None
     is_subscription: bool = False
-    is_optional: bool = False
     is_child_optional: bool = False
-    is_list: bool = False
-    is_union: bool = False
     federation: FederationFieldParams = dataclasses.field(
         default_factory=FederationFieldParams
     )
@@ -94,5 +88,4 @@ class FieldDefinition:
     permission_classes: List[Type[BasePermission]] = dataclasses.field(
         default_factory=list
     )
-    default_value: Any = undefined
     deprecation_reason: Optional[str] = None

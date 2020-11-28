@@ -4,8 +4,8 @@ from typing import Callable, List, Optional, Type, Union
 from .permission import BasePermission
 from .types.fields.resolver import StrawberryResolver
 from .types.types import FederationFieldParams, FieldDefinition
+from .types.types_new.type import StrawberryType
 from .utils.str_converters import to_camel_case
-
 
 _RESOLVER_TYPE = Union[StrawberryResolver, Callable]
 
@@ -37,7 +37,9 @@ class StrawberryField(dataclasses.Field):
         self._field_definition.origin = resolver.wrapped_func
         self._field_definition.base_resolver = resolver
         self._field_definition.arguments = resolver.arguments
-        self._field_definition.type = resolver.type
+
+        # TODO: Deal with origin
+        self._field_definition.type = StrawberryType(resolver.type)
 
         # Don't add field to __init__ or __repr__
         self.init = False
@@ -46,8 +48,9 @@ class StrawberryField(dataclasses.Field):
         return self
 
     def __setattr__(self, name, value):
-        if name == "type":
-            self._field_definition.type = value
+        # TODO: This seems unused
+        # if name == "type":
+        #     # self._field_definition.type = value
 
         if value and name == "name":
             if not self._field_definition.origin_name:
