@@ -1,6 +1,5 @@
 from typing import cast
 
-from strawberry.scalars import is_scalar
 from strawberry.types.types import FieldDefinition
 
 
@@ -9,7 +8,7 @@ def _convert_from_pydantic_to_strawberry_field(
 ):
     data = data_from_model or extra
 
-    if field.is_list:
+    if field.type.is_list:
         child = field.child
         items = [None for _ in data]
 
@@ -21,11 +20,11 @@ def _convert_from_pydantic_to_strawberry_field(
             )
 
         return items
-    elif is_scalar(field.type):  # type: ignore
+    elif field.type.is_scalar:
         return data
     else:
         return convert_pydantic_model_to_strawberry_class(
-            field.type, model_instance=data_from_model, extra=extra
+            field.type.wrapped_type, model_instance=data_from_model, extra=extra
         )
 
 

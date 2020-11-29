@@ -300,6 +300,10 @@ def _get_fields(cls: Type) -> List[FieldDefinition]:
             field_definition.origin = field_definition.origin or cls
             field_definition.origin_name = field.name
 
+            # TODO: Deal with namespace
+            if field_definition.type is None:
+                field_definition.type = StrawberryType(field.type)
+
         # Create a FieldDefinition for fields that didn't use strawberry.field
         else:
             # Only ignore Private fields that weren't defined using StrawberryFields

@@ -93,15 +93,15 @@ def convert_argument(value: Any, argument_definition: ArgumentDefinition) -> Any
     if is_unset(value):
         return value
 
-    if argument_definition.is_list:
+    if argument_definition.type.is_list:
         child_definition = cast(ArgumentDefinition, argument_definition.child)
 
         return [convert_argument(x, child_definition) for x in value]
 
-    argument_type = cast(Type, argument_definition.type)
-
-    if is_scalar(argument_type):
+    if argument_definition.type.is_scalar:
         return value
+
+    argument_type = argument_definition.type.wrapped_type
 
     # Convert Enum fields to instances using the value. This is safe
     # because graphql-core has already validated the input.

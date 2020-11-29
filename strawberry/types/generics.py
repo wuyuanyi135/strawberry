@@ -74,7 +74,7 @@ def copy_type_with(
             for field in definition.fields:
                 kwargs = dataclasses.asdict(field)
 
-                if field.is_list:
+                if field.type.is_list:
                     child = cast(FieldDefinition, field.child)
                     child_type = cast(Type, child.type)
 

@@ -1,7 +1,7 @@
 import typing
 from abc import ABC
-from typing import ClassVar, Dict, ForwardRef, Generic, Optional, Tuple, Type, TypeVar, \
-    Union
+from typing import ClassVar, Dict, ForwardRef, Generic, Optional, Tuple, Type, \
+    TypeVar, Union
 
 from cached_property import cached_property
 
@@ -22,6 +22,8 @@ class _UNSET:
 #    "Optional[SomeClass]"
 #    Optional["Optional[SomeClass]"]  # This is a silly edge case, but solving this
 #                                       means we have a good solution to the problem
+
+# TODO: Private types. Should that information be stored on the class or in the Type?
 
 
 _TYPE_TYPE = Union[Type[T], str, ForwardRef]
@@ -87,6 +89,10 @@ class StrawberryType(ABC, Generic[T]):
     def is_optional(self) -> bool:
         _ = self._resolved_type  # make sure property evaluates
         return self._is_optional
+
+    @cached_property
+    def is_scalar(self) -> bool:
+        return strawberry.scalars.is_scalar(self.wrapped_type)
 
     @cached_property
     def is_type_var(self) -> bool:

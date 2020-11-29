@@ -23,7 +23,7 @@ def convert_enums_to_values(field: FieldDefinition, result: Any) -> Any:
     if isinstance(result, enum.Enum):
         return result.value
 
-    if field.is_list:
+    if field.type.is_list:
         child_type = cast(FieldDefinition, field.child)
 
         return [convert_enums_to_values(child_type, item) for item in result]
