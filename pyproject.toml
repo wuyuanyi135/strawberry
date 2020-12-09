@@ -69,6 +69,7 @@ pydantic = {version = "^1.6.1", optional = false}
 email-validator = {version = "^1.1.2", optional = false}
 uvicorn = ">=0.11.6,<0.14.0"
 sanic = "^20.12.2"
+promise = "^2.3"
 
 [tool.poetry.extras]
 debug-server = ["uvicorn"]
