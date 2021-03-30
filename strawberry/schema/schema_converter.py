@@ -28,6 +28,7 @@ from strawberry.field import StrawberryField
 from strawberry.scalars import is_scalar
 from strawberry.types.types import ArgumentDefinition, TypeDefinition, undefined
 from strawberry.union import StrawberryUnion
+from strawberry.utils.str_converters import to_camel_case
 
 from .types.concrete_type import ConcreteType
 from .types.scalar import get_scalar_type
@@ -36,8 +37,9 @@ from .types.scalar import get_scalar_type
 class GraphQLCoreConverter:
     # TODO: Make abstract
 
-    def __init__(self):
+    def __init__(self, auto_camel_case: bool = True):
         self.type_map: Dict[str, ConcreteType] = {}
+        self.auto_camel_case = auto_camel_case
 
     def get_graphql_type_argument(self, argument: ArgumentDefinition) -> GraphQLType:
         # TODO: Completely replace with get_graphql_type
@@ -164,7 +166,11 @@ class GraphQLCoreConverter:
         graphql_arguments = {}
         for argument in field.arguments:
             assert argument.name is not None
-            graphql_arguments[argument.name] = self.from_argument(argument)
+            argument_name = (
+                to_camel_case(argument.name) if self.auto_camel_case else argument.name
+            )
+
+            graphql_arguments[argument_name] = self.from_argument(argument)
 
         return GraphQLField(
             type_=field_type,
@@ -201,7 +207,15 @@ class GraphQLCoreConverter:
             graphql_fields = {}
             for field in type_definition.fields:
                 assert field.graphql_name is not None
-                graphql_fields[field.graphql_name] = self.from_input_field(field)
+
+                graphql_name = (
+                    to_camel_case(field.graphql_name)
+                    if self.auto_camel_case
+                    else field.graphql_name
+                )
+
+                graphql_fields[graphql_name] = self.from_input_field(field)
+
             return graphql_fields
 
         graphql_object_type = GraphQLInputObjectType(
@@ -280,7 +294,14 @@ class GraphQLCoreConverter:
             graphql_fields = {}
             for field in type_definition.fields:
                 assert field.graphql_name is not None
-                graphql_fields[field.graphql_name] = self.from_field(field)
+
+                graphql_name = (
+                    to_camel_case(field.graphql_name)
+                    if self.auto_camel_case
+                    else field.graphql_name
+                )
+
+                graphql_fields[graphql_name] = self.from_field(field)
             return graphql_fields
 
         graphql_object_type = GraphQLObjectType(

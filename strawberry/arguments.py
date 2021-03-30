@@ -7,7 +7,6 @@ from typing_extensions import Annotated, get_args, get_origin
 from .exceptions import MultipleStrawberryArgumentsError, UnsupportedTypeError
 from .scalars import is_scalar
 from .types.types import ArgumentDefinition, undefined
-from .utils.str_converters import to_camel_case
 
 
 class StrawberryArgument:
@@ -32,7 +31,7 @@ def get_arguments_from_annotations(
 
         argument_definition = ArgumentDefinition(
             origin_name=name,
-            name=to_camel_case(name),
+            name=name,
             origin=origin,
             default_value=default_value,
         )

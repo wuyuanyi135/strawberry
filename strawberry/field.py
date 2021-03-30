@@ -14,7 +14,6 @@ from .permission import BasePermission
 from .types.fields.resolver import StrawberryResolver
 from .types.types import ArgumentDefinition, FederationFieldParams, undefined
 from .union import StrawberryUnion
-from .utils.str_converters import to_camel_case
 
 
 _RESOLVER_TYPE = Union[StrawberryResolver, Callable]
@@ -103,11 +102,11 @@ class StrawberryField(dataclasses.Field):
     @property
     def graphql_name(self) -> Optional[str]:
         if self._graphql_name:
-            return to_camel_case(self._graphql_name)
+            return self._graphql_name
         if self.python_name:
-            return to_camel_case(self.python_name)
+            return self.python_name
         if self.base_resolver:
-            return to_camel_case(self.base_resolver.name)
+            return self.base_resolver.name
         return None
 
     @property
