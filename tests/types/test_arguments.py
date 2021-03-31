@@ -27,7 +27,7 @@ def test_basic_arguments():
     assert definition.fields[0].arguments[0].type == str
     assert definition.fields[0].arguments[0].is_optional is False
 
-    assert definition.fields[0].arguments[1].name == "optionalArgument"
+    assert definition.fields[0].arguments[1].name == "optional_argument"
     assert definition.fields[0].arguments[1].type == str
     assert definition.fields[0].arguments[1].is_optional
 
@@ -53,7 +53,7 @@ def test_input_type_as_argument():
     assert definition.fields[0].arguments[0].type == Input
     assert definition.fields[0].arguments[0].is_optional is False
 
-    assert definition.fields[0].arguments[1].name == "optionalInput"
+    assert definition.fields[0].arguments[1].name == "optional_input"
     assert definition.fields[0].arguments[1].type == Input
     assert definition.fields[0].arguments[1].is_optional
 
@@ -132,7 +132,7 @@ def test_basic_arguments_on_resolver():
     assert definition.fields[0].arguments[1].type == str
     assert definition.fields[0].arguments[1].is_optional is False
 
-    assert definition.fields[0].arguments[2].name == "optionalArgument"
+    assert definition.fields[0].arguments[2].name == "optional_argument"
     assert definition.fields[0].arguments[2].type == str
     assert definition.fields[0].arguments[2].is_optional
 
@@ -166,7 +166,7 @@ def test_arguments_when_extending_a_type():
     assert definition.fields[0].arguments[1].type == str
     assert definition.fields[0].arguments[1].is_optional is False
 
-    assert definition.fields[0].arguments[2].name == "optionalArgument"
+    assert definition.fields[0].arguments[2].name == "optional_argument"
     assert definition.fields[0].arguments[2].type == str
     assert definition.fields[0].arguments[2].is_optional
 
@@ -203,7 +203,7 @@ def test_arguments_when_extending_multiple_types():
 
     assert len(definition.fields[1].arguments) == 1
 
-    assert definition.fields[1].graphql_name == "name2"
+    assert definition.fields[1].graphql_name == "name_2"
     assert definition.fields[1].arguments[0].name == "id"
     assert definition.fields[1].arguments[0].type == strawberry.ID
     assert definition.fields[1].arguments[0].is_optional is False

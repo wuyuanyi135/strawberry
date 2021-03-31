@@ -12,7 +12,6 @@ from strawberry.experimental.pydantic.conversion import (
 from strawberry.experimental.pydantic.fields import get_basic_type
 from strawberry.type import _process_type
 from strawberry.types.types import FederationTypeParams
-from strawberry.utils.str_converters import to_camel_case
 
 from .exceptions import MissingFieldsListError, UnregisteredTypeException
 
@@ -62,9 +61,7 @@ def type(
             (
                 name,
                 get_type_for_field(field),
-                dataclasses.field(
-                    default=strawberry.field(name=to_camel_case(field.alias))
-                ),
+                dataclasses.field(default=strawberry.field(name=field.alias)),
             )
             for name, field in model_fields.items()
             if name in fields_set
@@ -76,9 +73,7 @@ def type(
                 (
                     name,
                     type_,
-                    dataclasses.field(
-                        default=strawberry.field(name=to_camel_case(name))
-                    ),
+                    dataclasses.field(default=strawberry.field(name=name)),
                 )
                 for name, type_ in cls_annotations.items()
             )

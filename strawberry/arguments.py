@@ -7,6 +7,7 @@ from typing_extensions import Annotated, get_args, get_origin
 from .exceptions import MultipleStrawberryArgumentsError, UnsupportedTypeError
 from .scalars import is_scalar
 from .types.types import ArgumentDefinition, undefined
+from .utils.str_converters import to_camel_case
 
 
 class StrawberryArgument:
@@ -83,7 +84,9 @@ def is_unset(value: Any) -> bool:
     return type(value) is _Unset
 
 
-def convert_argument(value: Any, argument_definition: ArgumentDefinition) -> Any:
+def convert_argument(
+    value: Any, argument_definition: ArgumentDefinition, auto_camel_case: bool = True
+) -> Any:
     if value is None:
         return None
 
@@ -111,9 +114,15 @@ def convert_argument(value: Any, argument_definition: ArgumentDefinition) -> Any
         kwargs = {}
 
         for field in argument_type._type_definition.fields:
-            if field.graphql_name in value:
+            name = (
+                to_camel_case(field.graphql_name)
+                if auto_camel_case
+                else field.graphql_name
+            )
+
+            if name in value:
                 kwargs[field.python_name] = convert_argument(
-                    value[field.graphql_name], field
+                    value[name], field, auto_camel_case
                 )
 
         return argument_type(**kwargs)
@@ -124,6 +133,7 @@ def convert_argument(value: Any, argument_definition: ArgumentDefinition) -> Any
 def convert_arguments(
     value: Dict[str, Any],
     arguments: List[ArgumentDefinition],
+    auto_camel_case: bool = True,
 ) -> Dict[str, Any]:
     """Converts a nested dictionary to a dictionary of actual types.
 
@@ -136,11 +146,19 @@ def convert_arguments(
     kwargs = {}
 
     for argument in arguments:
-        if argument.name in value:
-            origin_name = cast(str, argument.origin_name)
-            current_value = value[argument.name]
+        assert argument.name
 
-            kwargs[origin_name] = convert_argument(current_value, argument)
+        argument_name = (
+            to_camel_case(argument.name) if auto_camel_case else argument.name
+        )
+
+        if argument_name in value:
+            origin_name = cast(str, argument.origin_name)
+            current_value = value[argument_name]
+
+            kwargs[origin_name] = convert_argument(
+                current_value, argument, auto_camel_case
+            )
 
     return kwargs
 
